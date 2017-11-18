@@ -1,0 +1,2 @@
+# NovaORM
+Simple C# ORM
