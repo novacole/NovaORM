@@ -3,7 +3,7 @@ A Simple ORM written in C#. NovaORM is a thin wrapper over ADO.NET, designed to 
 
 Example
 
-Lets say you have a db table and POCO class ``Person`` 
+Let's say you have a DB table and POCO class ``Person`` 
 ***
 
 ```C# 
@@ -27,7 +27,7 @@ With NovaORM you could do the following:
 //...
  ```
 		
-			Or
+Or
 ***
 ```C#       
             var db = new NovA("ConnectionString");
