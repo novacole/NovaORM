@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NovaORM", "NovaORM\NovaORM.csproj", "{F33F3744-E022-446A-9046-4C40FB3326A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NovaORM.Tests", "NovaORM.Tests\NovaORM.Tests.csproj", "{D77EB1F6-B5EF-410C-9193-0AF9E817FEC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{F33F3744-E022-446A-9046-4C40FB3326A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F33F3744-E022-446A-9046-4C40FB3326A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F33F3744-E022-446A-9046-4C40FB3326A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D77EB1F6-B5EF-410C-9193-0AF9E817FEC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D77EB1F6-B5EF-410C-9193-0AF9E817FEC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D77EB1F6-B5EF-410C-9193-0AF9E817FEC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D77EB1F6-B5EF-410C-9193-0AF9E817FEC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
