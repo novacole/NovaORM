@@ -80,6 +80,7 @@ namespace NovaORM
         }
 
         public NovA() { }
+        #endregion
         public string GetValuesAsStringForCSV<T>(T obj)
         {
             return string.Join("^", obj.GetType().GetProperties().Select(x => (x.GetValue(obj, null) == null ? "" : x.GetValue(obj, null).ToString())).ToList());
@@ -109,7 +110,7 @@ namespace NovaORM
             return obj != null ? TypeMap.Where(x => x.Key == obj.GetType()).SingleOrDefault().Value : SqlDbType.NVarChar;
         }
 
-        #endregion
+     
         public List<T> GetList<T>(string sql)
         {
             List<T> items = new List<T>();
