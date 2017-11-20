@@ -13,7 +13,7 @@ namespace NovaORM
     public class NovA
     {
         public class IsPrimaryKey : Attribute { }
-        #region Private Methods and Fields
+        #region Private Methods and Properities
         private string ConnectionString { get; set; }
         private string Predicate { get; set; }
         private SqlConnection GetConnection()
@@ -25,16 +25,23 @@ namespace NovaORM
             T obj = (T)Activator.CreateInstance(typeof(T));
             string listOfProperties = string.Empty;
             if (ignorePK)
-                listOfProperties = string.Join(",", obj.GetType().GetProperties().ToList().Where(x => x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() == 0).Select(x => ((bool)parameterize ? "@" : "") + x.Name));
+                listOfProperties = string.Join(",", obj.GetType()
+                    .GetProperties().ToList()
+                    .Where(x => x.GetCustomAttributes(typeof(IsPrimaryKey), false)
+                    .Count() == 0).Select(x => ((bool)parameterize ? "@" : "")
+                    + x.Name));
             else
-                listOfProperties = string.Join(",", obj.GetType().GetProperties().ToList().Select(x => ((bool)parameterize ? "@" : "") + x.Name));
+                listOfProperties = string.Join(",", obj.GetType()
+                    .GetProperties().ToList().Select(x =>
+                    ((bool)parameterize ? "@" : "") + x.Name));
             return listOfProperties;
         }
 
         private string GetPropertiesAsString(IDictionary<string, object> tableObject, bool? parameterize = false)
         {
             string listOfProperties = string.Empty;
-            listOfProperties = string.Join(",", tableObject.Keys.Select(x => ((bool)parameterize ? "@" : "") + x));
+            listOfProperties = string.Join(",", tableObject.Keys
+                .Select(x => ((bool)parameterize ? "@" : "") + x));
             return listOfProperties;
         }
         private string GetPropertiesAsStringForUpdate<T>(bool ignorePK, bool? parameterize = false)
@@ -42,32 +49,57 @@ namespace NovaORM
             T obj = (T)Activator.CreateInstance(typeof(T));
             string listOfProperties = string.Empty;
             if (ignorePK)
-                listOfProperties = string.Join(",", obj.GetType().GetProperties().ToList().Where(x => x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() == 0).Select(x => x.Name + "=" + ((bool)parameterize ? "@" + x.Name : (x.GetValue(obj, null) == null ? "null" : (x.GetValue(obj, null).ToString())))));
+                listOfProperties = string.Join(",", obj.GetType().GetProperties()
+                    .ToList()
+                    .Where(x => x.GetCustomAttributes(typeof(IsPrimaryKey), false)
+                    .Count() == 0).Select(x => x.Name + "=" +
+                    ((bool)parameterize ? "@" + x.Name : (x.GetValue(obj, null) == null ?
+                    "null" : (x.GetValue(obj, null).ToString())))));
             else
-                listOfProperties = string.Join(",", obj.GetType().GetProperties().ToList().Select(x => x.Name + "=" + ((bool)parameterize ? "@" + x.Name : (x.GetValue(obj, null) == null ? "null" : (x.GetValue(obj, null).ToString())))));
+                listOfProperties = string.Join(",", obj.GetType().GetProperties().ToList()
+                    .Select(x => x.Name + "=" + ((bool)parameterize ? "@" + x.Name :
+                    (x.GetValue(obj, null) == null ? "null" : (x.GetValue(obj, null)
+                    .ToString())))));
             return listOfProperties;
         }
         private string GetPropertiesAsStringForUpdate(IDictionary<string, object> tableObject, bool? parameterize = false)
         {
             string listOfProperties = string.Empty;
-            listOfProperties = string.Join(",", tableObject.Select(x => x.Key + "=" + ((bool)parameterize ? "@" + x.Key : ((x.Value == null ? (!(x.Value is string) ? "null" : "") : x.Value.ToString())))));
+            listOfProperties = string.Join(",", tableObject.Select(x => x.Key + "=" +
+            ((bool)parameterize ? "@" + x.Key : ((x.Value == null ? (!(x.Value is string) ?
+            "null" : "") : x.Value.ToString())))));
             return listOfProperties;
         }
         private string GetValuesAsString<T>(T obj, bool? ignorePK = false)
         {
-            return string.Join("^", obj.GetType().GetProperties().Where(x => ignorePK.HasValue && ignorePK.Value == true ? x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() == 0 : x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() >= 0).Select(x => (x.GetValue(obj, null) == null ? (!(x.GetType().Equals(typeof(string))) ? "null" : "") : (x.GetValue(obj, null).ToString()))).ToList());
+            return string.Join("^", obj.GetType().GetProperties()
+                .Where(x => ignorePK.HasValue && ignorePK.Value == true ?
+                x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() == 0 :
+                x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() >= 0)
+                .Select(x => (x.GetValue(obj, null) == null ? (!(x.GetType()
+                .Equals(typeof(string))) ? "null" : "") : (x.GetValue(obj, null)
+                .ToString()))).ToList());
         }
         private List<object> GetValuesAsList<T>(T obj, bool? ignorePK = false)
         {
-            return obj.GetType().GetProperties().Where(x => ignorePK.HasValue && ignorePK.Value == true ? x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() == 0 : x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() >= 0).Select(x => (x.GetValue(obj, null) == null ? (!(x.GetType().Equals(typeof(string))) ? null : "") : (x.GetValue(obj, null)))).ToList();
+            return obj.GetType().GetProperties().Where(x => ignorePK.HasValue &&
+            ignorePK.Value == true ? x.GetCustomAttributes(typeof(IsPrimaryKey), false)
+            .Count() == 0 : x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() >= 0)
+            .Select(x => (x.GetValue(obj, null) ??
+            (!(x.GetType().Equals(typeof(string))) ? null : "")))
+            .ToList();
         }
         private List<object> GetValuesAsList(IDictionary<string, object> tableObject)
         {
-            return tableObject.Values.Select(x => ((x == null ? (!(x is string) ? null : "") : x))).ToList();
+            return tableObject.Values
+                .Select(x =>
+                ((x ?? (!(x is string) ? null : ""))))
+                .ToList();
         }
         private string GetValuesAsString(IDictionary<string, object> tableObject)
         {
-            return string.Join("^", tableObject.Values.Select(x => ((x == null ? (!(x is string) ? "null" : "") : x.ToString()))));
+            return string.Join("^", tableObject.Values.Select(x =>
+            ((x == null ? (!(x is string) ? "null" : "") : x.ToString()))));
         }
 
         #endregion
@@ -83,11 +115,14 @@ namespace NovaORM
         #endregion
         public string GetValuesAsStringForCSV<T>(T obj)
         {
-            return string.Join("^", obj.GetType().GetProperties().Select(x => (x.GetValue(obj, null) == null ? "" : x.GetValue(obj, null).ToString())).ToList());
+            return string.Join("^", obj.GetType().GetProperties().Select(x =>
+            (x.GetValue(obj, null) == null ? "" : x.GetValue(obj, null)
+            .ToString())).ToList());
         }
         public string GetValuesAsStringForCSV(ICollection<object> obj)
         {
-            return string.Join("^", obj.Select(x => x == null ? "" : x.ToString()).ToList());
+            return string.Join("^", obj.Select(x => x == null ? "" : x.ToString())
+                .ToList());
         }
         private Dictionary<Type, SqlDbType> TypeMap
         {
@@ -107,10 +142,13 @@ namespace NovaORM
         }
         private SqlDbType GetDBType(object obj)
         {
-            return obj != null ? TypeMap.Where(x => x.Key == obj.GetType()).SingleOrDefault().Value : SqlDbType.NVarChar;
+            return obj != null ?
+                TypeMap.Where(x => x.Key == obj.GetType())
+                .SingleOrDefault()
+                .Value : SqlDbType.NVarChar;
         }
 
-     
+
         public List<T> GetList<T>(string sql)
         {
             List<T> items = new List<T>();
@@ -122,14 +160,15 @@ namespace NovaORM
                 }
                 using (SqlCommand com = new SqlCommand(sql, con))
                 {
-
                     SqlDataReader reader = com.ExecuteReader();
                     while (reader.Read())
                     {
                         T item = (T)Activator.CreateInstance(typeof(T));
                         foreach (PropertyInfo prop in item.GetType().GetProperties())
                         {
-                            prop.SetValue(item, DBNull.Value.Equals(reader[prop.Name]) ? null : reader[prop.Name], null);
+                            prop.SetValue(item,
+                                DBNull.Value.Equals(reader[prop.Name]) ?
+                                null : reader[prop.Name], null);
                         }
                         items.Add(item);
                     }
@@ -160,7 +199,8 @@ namespace NovaORM
                         T item = (T)Activator.CreateInstance(typeof(T));
                         foreach (PropertyInfo prop in item.GetType().GetProperties())
                         {
-                            prop.SetValue(item, DBNull.Value.Equals(reader[prop.Name]) ? null : reader[prop.Name], null);
+                            prop.SetValue(item, DBNull.Value.Equals(reader[prop.Name]) ?
+                                null : reader[prop.Name], null);
                         }
                         items.Add(item);
                     }
@@ -174,7 +214,8 @@ namespace NovaORM
         }
         public NovA Where<T>(Expression<Predicate<T>> predicate)
         {
-            Dictionary<string, string> operandAndOperatorMap = new Dictionary<string, string>()
+            Dictionary<string, string> operandAndOperatorMap =
+                new Dictionary<string, string>()
                 {{ "==","=" },
                 { "!=","<>" },
                 { "AndAlso","AND" },
@@ -183,15 +224,20 @@ namespace NovaORM
                 { "False","0" },
                 { "True","1" }};
             var parseDict = new Dictionary<string, string>();
-            var body = predicate.Body.ToString().Replace(predicate.Parameters[0].Name + ".", typeof(T).Name + ".").Replace(")", " )").Replace("Convert", "");
-            this.Predicate = string.Join(" ", body.Split(' ').ToList().Select(x => operandAndOperatorMap.Where(y => y.Key == x).SingleOrDefault().Value != null ? operandAndOperatorMap.Where(y => y.Key == x).SingleOrDefault().Value : x.Replace("\"", "'")));
+            var body = predicate.Body.ToString()
+                .Replace(predicate.Parameters[0].Name + ".", typeof(T).Name + ".")
+                .Replace(")", " )").Replace("Convert", "");
+            this.Predicate = string.Join(" ", body.Split(' ').ToList()
+                .Select(x => operandAndOperatorMap.Where(y => y.Key == x)
+                .SingleOrDefault().Value != null ? operandAndOperatorMap
+                .Where(y => y.Key == x).SingleOrDefault().Value : x.Replace("\"", "'")));
             return this;
         }
         public object GetConvertType(string value)
         {
             DateTime possibleDateTime = DateTime.Now;
             if (DateTime.TryParse(value, out possibleDateTime))
-                return "'" + value + "'";
+                return $"'{value}'";
             else
                 return value;
         }
@@ -212,7 +258,9 @@ namespace NovaORM
                         var item = (new ExpandoObject() as IDictionary<string, object>);
                         for (int i = 0; i <= reader.FieldCount - 1; i++)
                         {
-                            item.Add(reader.GetName(i), DBNull.Value.Equals(reader.GetValue(i)) ? null : reader.GetValue(i));
+                            item.Add(reader.GetName(i),
+                                DBNull.Value.Equals(reader.GetValue(i)) ?
+                                null : reader.GetValue(i));
                         }
                         items.Add(item);
                     }
@@ -229,24 +277,35 @@ namespace NovaORM
                 {
                     con.Open();
                 }
-                builder.Append("update " + tableObject.GetType().Name);
-                builder.Append(" set ");
-                builder.Append(GetPropertiesAsStringForUpdate<T>(true, true));
-                if (tableObject.GetType().GetProperties().ToList().Where(x => x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() > 0).FirstOrDefault() != null)
+                builder.Append("update " + tableObject.GetType().Name)
+                    .Append(" set ")
+                    .Append(GetPropertiesAsStringForUpdate<T>(true, true));
+                if (tableObject.GetType().GetProperties().ToList()
+                    .Where(x => x.GetCustomAttributes(typeof(IsPrimaryKey), false)
+                    .Count() > 0).FirstOrDefault() != null)
                 {
                     builder.Append(" where ");
-                    var primaryKey = tableObject.GetType().GetProperties().ToList().Where(x => x.GetCustomAttributes(typeof(IsPrimaryKey), false).Count() > 0).FirstOrDefault();
-                    builder.Append(primaryKey.Name + " = " + (primaryKey.GetValue(tableObject, null).ToString()));
+                    var primaryKey = tableObject.GetType().GetProperties().ToList()
+                        .Where(x => x.GetCustomAttributes(typeof(IsPrimaryKey), false)
+                        .Count() > 0).FirstOrDefault();
+                    builder.Append(primaryKey.Name + " = " +
+                        (primaryKey.GetValue(tableObject, null).ToString()));
                 }
 
                 using (SqlCommand com = new SqlCommand(builder.ToString(), con))
                 {
-                    var props = GetPropertiesAsString<T>(ignorePK: true, parameterize: true).Split(',');
+                    var props = GetPropertiesAsString<T>(ignorePK: true, parameterize: true)
+                        .Split(',');
                     var vals = GetValuesAsList<T>(tableObject, ignorePK: true);
                     int i = 0;
                     props.ToList().ForEach(x =>
                     {
-                        com.Parameters.Add(new SqlParameter() { ParameterName = x, Value = vals[i] == null ? DBNull.Value : vals[i], SqlDbType = GetDBType(vals[i++]) });
+                        com.Parameters.Add(new SqlParameter()
+                        {
+                            ParameterName = x,
+                            Value = vals[i] ?? DBNull.Value,
+                            SqlDbType = GetDBType(vals[i++])
+                        });
                     });
                     com.ExecuteNonQuery();
                 }
@@ -255,12 +314,11 @@ namespace NovaORM
         public void DeleteFromWhere(string table, string predicate)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("delete from ");
-            builder.Append(table);
+            builder.Append("delete from ").Append(table);
             if (!string.IsNullOrEmpty(predicate))
             {
-                builder.Append(" where ");
-                builder.Append(predicate);
+                builder.Append(" where ")
+                    .Append(predicate);
             }
             using (SqlConnection con = GetConnection())
             {
@@ -283,14 +341,11 @@ namespace NovaORM
                 {
                     con.Open();
                 }
-                builder.Append("update " + tableName);
-                builder.Append(" set ");
-                builder.Append(GetPropertiesAsStringForUpdate(tableObject, true));
+                builder.Append("update " + tableName)
+                    .Append(" set ")
+                    .Append(GetPropertiesAsStringForUpdate(tableObject, true));
                 if (!string.IsNullOrEmpty(predicate))
-                {
-                    builder.Append(" where ");
-                    builder.Append(predicate);
-                }
+                    builder.Append(" where ").Append(predicate);
 
                 using (SqlCommand com = new SqlCommand(builder.ToString(), con))
                 {
@@ -299,7 +354,12 @@ namespace NovaORM
                     int i = 0;
                     props.ToList().ForEach(x =>
                     {
-                        com.Parameters.Add(new SqlParameter() { ParameterName = x, Value = vals[i] == null ? DBNull.Value : vals[i], SqlDbType = GetDBType(vals[i++]) });
+                        com.Parameters.Add(new SqlParameter()
+                        {
+                            ParameterName = x,
+                            Value = vals[i] ?? DBNull.Value,
+                            SqlDbType = GetDBType(vals[i++])
+                        });
                     });
                     com.ExecuteNonQuery();
                 }
@@ -315,24 +375,30 @@ namespace NovaORM
                     con.Open();
                 }
                 // assumes class name is table name...
-                builder.Append("insert into " + tableObject.GetType().Name);
-                builder.Append("(");
-                builder.Append(GetPropertiesAsString<T>(ignorePK: true));
-                builder.Append(")");
-                builder.Append(" values ");
-                builder.Append("(");
-                builder.Append(GetPropertiesAsString<T>(ignorePK: true, parameterize: true));
-                builder.Append(")");
+                builder.Append("insert into " + tableObject.GetType().Name)
+                    .Append("(")
+                    .Append(GetPropertiesAsString<T>(ignorePK: true))
+                    .Append(")")
+                    .Append(" values ")
+                    .Append("(")
+                    .Append(GetPropertiesAsString<T>(ignorePK: true, parameterize: true))
+                    .Append(")");
                 using (SqlCommand com = new SqlCommand(builder.ToString(), con))
                 {
-                    var props = GetPropertiesAsString<T>(ignorePK: true, parameterize: true).Split(',');
+                    var props =
+                        GetPropertiesAsString<T>(ignorePK: true, parameterize: true)
+                        .Split(',');
                     var vals = GetValuesAsList<T>(tableObject, ignorePK: true);
                     int i = 0;
                     props.ToList().ForEach(x =>
                     {
-                        com.Parameters.Add(new SqlParameter() { ParameterName = x, Value = vals[i] == null ? DBNull.Value : vals[i], SqlDbType = GetDBType(vals[i++]) });
+                        com.Parameters.Add(new SqlParameter()
+                        {
+                            ParameterName = x,
+                            Value = vals[i] ?? DBNull.Value,
+                            SqlDbType = GetDBType(vals[i++])
+                        });
                     });
-
                     com.ExecuteNonQuery();
                 }
             }
@@ -346,28 +412,34 @@ namespace NovaORM
                 {
                     con.Open();
                 }
-                builder.Append("insert into " + tableName);
-                builder.Append("(");
-                builder.Append(GetPropertiesAsString(tableObject));
-                builder.Append(")");
-                builder.Append(" values ");
-                builder.Append("(");
-                builder.Append(GetValuesAsString(tableObject));
-                builder.Append(")");
+                builder
+                    .Append("insert into " + tableName)
+                    .Append("(")
+                    .Append(GetPropertiesAsString(tableObject))
+                    .Append(")")
+                    .Append(" values ")
+                    .Append("(")
+                    .Append(GetValuesAsString(tableObject))
+                    .Append(")");
                 using (SqlCommand com = new SqlCommand(builder.ToString(), con))
                 {
-                    var props = GetPropertiesAsString(tableObject, parameterize: true).Split(',');
+                    var props =
+                        GetPropertiesAsString(tableObject, parameterize: true).Split(',');
                     var vals = GetValuesAsList(tableObject);
                     int i = 0;
                     props.ToList().ForEach(x =>
                     {
-                        com.Parameters.Add(new SqlParameter() { ParameterName = x, Value = vals[i] == null ? DBNull.Value : vals[i], SqlDbType = GetDBType(vals[i++]) });
+                        com.Parameters.Add(new SqlParameter()
+                        {
+                            ParameterName = x,
+                            Value = vals[i] ?? DBNull.Value,
+                            SqlDbType = GetDBType(vals[i++])
+                        });
                     });
                     com.ExecuteNonQuery();
                 }
             }
         }
         #endregion
-
     }
 }
